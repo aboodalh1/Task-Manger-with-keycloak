@@ -1,0 +1,25 @@
+package com.example.task_manger.users.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/demo")
+public class DemoController {
+
+    @GetMapping
+    public ResponseEntity<?> getTasks(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject(); //
+
+        return ResponseEntity.ok("المستخدم الحالي هو: " + userId);
+    }
+
+    @GetMapping("hello-2")
+    public String hello2(){
+        return "Hello from Spting boot & keycloak -ADMIN";
+    }
+}

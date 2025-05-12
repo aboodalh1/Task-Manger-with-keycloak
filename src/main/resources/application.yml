@@ -1,0 +1,58 @@
+server:
+  port: 8081
+
+jwt:
+  auth:
+    converter:
+      resource-id: task-manger-api
+      principle-attribute: principal_username
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        resource:
+          id: task-manger-api
+          username: admin
+          password: admin
+        jwt:
+          issuer-uri: http://localhost:8080/realms/TestMangerUsers
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+      client:
+        registration:
+          keycloak:
+            client-name: keycloak
+            client-id: task-manger-api
+            client-secret: 7zUkN0BAOnxMtXkJgz98NFAr8jRvYzC6
+            authorization-grant-type: authorization_code
+            realm: TestMangerUsers
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+        provider:
+          keycloak:
+            keycloak-uri: http://localhost:8080/
+            issuer-uri: http://localhost:8080/realms/TestMangerUsers
+            user-uri: http://localhost:8080/admin/realms/TestMangerUsers/users
+            user-info-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/userinfo
+            authorization-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/auth
+            admin-token-uri: http://localhost:8080/realms/master/protocol/openid-connect/token
+            token-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/token
+            jwk-set-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+
+  application:
+    name: abdallah
+  datasource:
+    url: jdbc:postgresql://localhost:5234/task_manger_db
+    username: abdallah
+    password: password
+    driver-class-name: org.postgresql.Driver
+    name: task_manger_db
+  jpa:
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    properties:
+      format_sql: true
+    show-sql: true
+

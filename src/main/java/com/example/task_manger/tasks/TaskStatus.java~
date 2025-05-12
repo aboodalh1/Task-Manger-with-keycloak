@@ -1,0 +1,4 @@
+package com.example.task_manger.tasks;
+
+public enum TaskStatus {
+}

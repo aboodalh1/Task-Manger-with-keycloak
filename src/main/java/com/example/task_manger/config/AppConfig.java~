@@ -1,0 +1,26 @@
+package com.example.task_manger.config;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    private final String keycloakUrl = "http://localhost:8080/";
+    private final String realm = "TestMangerUsers";
+    private final String clientId = "task-manger-api";
+    private final String clientSecret = "7zUkN0BAOnxMtXkJgz98NFAr8jRvYzC6"; // من Keycloak
+
+    @Bean
+    public Keycloak keycloak() {
+        return KeycloakBuilder.builder()
+                .serverUrl(keycloakUrl)
+                .realm("TestMangerUsers") // لازم تكون master لأنك عم تعمل إدارة، مو realm العادي
+                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build();
+    }
+}
