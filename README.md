@@ -1,0 +1,108 @@
+# Task Manager API (Spring Boot + Keycloak)
+
+## Overview
+
+This project is a simple task management API that integrates with Keycloak for authentication and authorization.
+Each user can only access their own tasks, using swagger as API documentation.
+
+---
+
+## Keycloak Setup
+
+You can configure Keycloak manually or import the provided `realm-export.json`.
+
+### Manual Setup:
+
+1. **Create Realm:** `TestMangerUsers`
+2. **Create Client:** `task-manger-api`
+    - Access Type: confidential
+    - Root URL: leave blank
+    - Valid redirect URIs: `*` or your frontend's URL
+    - Add client secret
+3. **Create Users:** (e.g., abdallah2)
+    - Set password & enable user
+
+4. **Role Mapping:** not used (authorization based on token info)
+
+---
+
+## Build & Run
+
+### Requirements:
+
+- Java 17+
+- Maven
+- docker images (postgres, keycloak)
+
+### Steps:
+
+```bash
+# Clone the project
+git clone https://github.com/your-username/task-manager.git
+```
+
+# run docker compose files to create keycloak and postgres container
+
+```bash
+# Build the project
+cd task-manager
+mvn clean install
+
+# Run the app
+mvn spring-boot:run
+```
+
+# Go to:
+
+### http://localhost:8081/swagger-ui/index.html#/
+
+To Launch swagger ui for API documentation and testing
+
+## Design Decisions & Justifications
+
+- Authorization Logic (User Owns Task)
+
+Implemented in the **service layer** using a manual check (UserContext.getUserId()).
+
+### Justification:
+
+when security depends on runtime context (like JWT claims)
+it's better to handle it in the service layer, also, This allows for full control,
+better error handling, and simpler unit testing.
+
+@PreAuthorize is not used especially in our case we have only one role (user role)
+and all the users have the same role, but we want to make the authorization through user id
+so in the service layer after loading entities from DB we check if the task id matches the user id
+but in the future when we have more roles like admin and user we can use @PreAuthorize to check if the user has the
+required role
+to access its methods.
+also in our case using @PreAuthorize would tie logic too tightly to annotations and reduce flexibility
+for business rules.
+
+#
+
+- Keycloak Integration
+
+JWTs are validated via Spring Security using issuer-uri and jwk-set-uri.
+
+UserContext is populated using a custom interceptor that extracts sub or preferred_username from JWT.
+
+#
+
+- JPA / Hibernate Design
+
+FetchType.LAZY is used for relationships (if any) to avoid unnecessary data loading.
+
+No cascade options used, as each entity is independently managed.
+
+#
+
+- Challenges & Solutions
+
+Token refresh after deletion: Token is still valid unless the session is invalidated. This was resolved by manually
+revoking the session through Keycloak's Admin API (or session expiration).
+
+Cross-module separation: Keeping user and task logic in separate modules required careful design for shared JWT
+handling.
+
+
