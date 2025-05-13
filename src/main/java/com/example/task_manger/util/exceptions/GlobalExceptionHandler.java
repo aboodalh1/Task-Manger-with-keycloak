@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<Object> handleNotFoundException(TaskNotFoundException ex) {
+    public ResponseEntity<APIException> handleNotFoundException(TaskNotFoundException ex) {
         APIException errorResponse = new APIException(ex.getMessage(), HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
@@ -79,17 +79,6 @@ public class GlobalExceptionHandler {
                 forbiddenStatud.value()
         );
         return new ResponseEntity<>(apiException, forbiddenStatud);
-    }
-
-    @ExceptionHandler(value = {TooManyRequestException.class})
-    public ResponseEntity<APIException> handleTooManyRequestException(TooManyRequestException ex) {
-        HttpStatus tooManyRequests = HttpStatus.TOO_MANY_REQUESTS;
-        APIException apiException = new APIException(
-                ex.getMessage(),
-                tooManyRequests,
-                tooManyRequests.value()
-        );
-        return new ResponseEntity<>(apiException, tooManyRequests);
     }
 
     @ExceptionHandler(Exception.class)
