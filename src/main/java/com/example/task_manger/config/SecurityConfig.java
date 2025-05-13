@@ -16,9 +16,11 @@ public class SecurityConfig {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JWTAuthConverter jwtAuthConverter;
-
+    // Allow auhtentication and swagger link to access without token
     private static final String[] whiteListUrl = {
-            "/api/v1/auth/**",
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/auth/refresh",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -41,7 +43,9 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(whiteListUrl).permitAll()
-                        .requestMatchers("/api/tasks/**").authenticated()
+                        .requestMatchers("/api/v1/tasks/**").authenticated()
+                        .requestMatchers("/api/v1/auth/delete").authenticated()
+                        .requestMatchers("/api/v1/auth/logout").authenticated()
                         .anyRequest().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

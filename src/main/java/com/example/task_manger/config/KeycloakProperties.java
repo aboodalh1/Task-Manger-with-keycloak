@@ -3,6 +3,7 @@ package com.example.task_manger.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+// Keycloak properties it to get any confidential variable from keycloak
 @Component
 @ConfigurationProperties(prefix = "spring.security.oauth2")
 public class KeycloakProperties {

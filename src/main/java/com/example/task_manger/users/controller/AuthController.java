@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.ws.rs.NotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,7 +38,7 @@ public class AuthController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = RegisterRequest.class),
                             examples = @ExampleObject(
-                                    value = "{ \"username\": \"abdallah\", \"firstName\": \"AbdAllah\", \"lastName\": \"Alharisi\", \"email\": \"abd@gmail.com\", \"password\": \"Abood@123\" }"
+                                    value = "{ \"username\": \"abdallah\", \"firstName\": \"AbdAllah\", \"lastName\": \"Alharisi\", \"email\": \"abd@gmail.com\", \"password\": \"Abd@1234\" }"
                             )
                     )
             ),
@@ -55,8 +55,7 @@ public class AuthController {
                                                   "refresh_token": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI2MmIxNzk4Zi02OTQ5LTRkNTctODliNS1mMzk1MWFkZDY5MzQifQ.eyJleHAiOjE3NDcwNDY5MjQsImlhdCI6MTc0NzA0NTEyNCwianRpIjoiYTIwNzgxZGUtMTA2Yi00NDllLWFhODUtYjBlZjBmNTk4YmM1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9UZXN0TWFuZ2VyVXNlcnMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL1Rlc3RNYW5nZXJVc2VycyIsInN1YiI6IjY4NTUzYzI2LWUyYWMtNGY1Yi1iZWQ2LTVhYWYxZThjYjI1ZiIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJ0YXNrLW1hbmdlci1hcGkiLCJzaWQiOiIzMDczNTJjZC1hMTIwLTQyODItOTYzZi1hMTg0MzM4OTlhYjciLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIHdlYi1vcmlnaW5zIGFjciByb2xlcyBzZXJ2aWNlX2FjY291bnQgYmFzaWMgZW1haWwifQ.WmOKcuBBrV6A-kYlsyTeYVaNIMYqwDvpXsHq20GXYr8epHG31ysXdlAgwuMUppbpIjwwHafWFxr_05lscXhkDg",
                                                   "firstName": "AbdAllah",
                                                   "lastName": "Alharisi",
-                                                  "id": null,
-                                                  "expires_in": 300,
+                                                  "id": 324asd-12scaw-asdac1-csasda,
                                                   "email": "abd@gmail.com",
                                                   "username": "Abd@1234"
                                               }
@@ -80,7 +79,7 @@ public class AuthController {
             }
     )
     @PostMapping("/register")
-    public ResponseEntity<MyAPIResponse<String>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<MyAPIResponse<String>> register(@Valid @RequestBody RegisterRequest request) {
         boolean success = authService.registerUser(request);
         return success ? ResponseEntity.ok(new MyAPIResponse<>(true,201,"User registered successfully"))
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MyAPIResponse<>(false,400,"Registration failed"));
@@ -95,7 +94,7 @@ public class AuthController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = RegisterRequest.class),
                             examples = @ExampleObject(
-                                    value = "{ \"username\": \"abdallah\", \"password\": \"123123\" }"
+                                    value = "{ \"username\": \"abdallah\", \"password\": \"Abd@1234\" }"
                             )
                     )
             ),
@@ -114,7 +113,7 @@ public class AuthController {
                                                   "expires_in": 300,
                                                   "email": "abd@gmail.com",
                                                   "username": "abdallah2",
-                                                  "password": "123123",
+                                                  "password": "Abd@1234",
                                                   "refresh_token": "eyJhbGciOiJbpIjwwHafWFxr....."
                                                   "access_token": "eyJhbGciOiJSUzI1NiIsIOpVF.....",
                                               }
@@ -140,27 +139,75 @@ public class AuthController {
             }
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         return authService.loginUser(request);
     }
 
-    @DeleteMapping("/{username}")
-    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal Jwt jwt) {
-        try {
-            authService.deleteUser(jwt);
-            return ResponseEntity.ok("User deleted successfully.");
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @Operation(
+            summary = "Delete User",
+            description = "Delete user by jwt token",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User deleted successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = RegisterRequest.class),
+                                    examples = @ExampleObject("""
+                        {
+                          "message": "User deleted successfully",
+                          "status": 200,
+                        }
+                        """)
+                            ))}
+
+    )
+    @DeleteMapping("/delete")
+    public ResponseEntity<MyAPIResponse<?>> deleteUser(@AuthenticationPrincipal Jwt jwt) {
+            return authService.deleteUser(jwt);
     }
 
+    @Operation(
+            summary = "Logout User",
+            description = "Logout user by jwt token",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User logged out successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = RegisterRequest.class),
+                                    examples = @ExampleObject("""
+                        {
+                          "message": "User logged out successfully",
+                          "status": 200,
+                        }
+                        """)
+                            ))}
+    )
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<MyAPIResponse<String>> logout(@AuthenticationPrincipal Jwt jwt) {
         boolean success = authService.logoutUser(jwt);
-        return success ? ResponseEntity.ok("User logged out successfully")
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Logout faild");
+        return success ?ResponseEntity.ok(new MyAPIResponse<>(true,200,"User logged out successfully."))
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MyAPIResponse<>(false,400,"Logout faild"));
     }
 
+    @Operation(
+            summary = "Refresh Access Token",
+            description = "Refresh access token by refresh token",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = RefreshTokenRequest.class),
+                            examples = @ExampleObject("""
+                                    {
+                                      "refreshToken": "eyJhbGciOiJSUzI1NiIsIOpVF....."
+                                    }
+                        """)
+                    )
+                            )
+    )
     @PostMapping("/refresh")
     public ResponseEntity<MyAPIResponse<String>> refreshAccessToken(@RequestBody RefreshTokenRequest refreshToken) {
         return authService.refreshToken(refreshToken);

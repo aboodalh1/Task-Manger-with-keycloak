@@ -16,7 +16,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<APIException> handleInvalidCredentials(InvalidCredentialsException ex) {
+    public ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex) {
         HttpStatus invalidCredentialsStatus = HttpStatus.UNAUTHORIZED;
         APIException errorResponse = new APIException(ex.getMessage(), invalidCredentialsStatus, invalidCredentialsStatus.value());
         return new ResponseEntity<>(errorResponse, invalidCredentialsStatus);
@@ -39,6 +39,7 @@ public class GlobalExceptionHandler {
     }
 
 
+
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(TaskNotFoundException ex) {
         APIException errorResponse = new APIException(ex.getMessage(), HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value());
@@ -54,13 +55,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<APIException>  handleUsernameNotFound(UsernameNotFoundException ex) {
-        APIException errorResponse = new APIException(ex.getMessage(), HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    public ResponseEntity<Map<String, String>> handleUsernameNotFound(UsernameNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Unauthorized", "message", ex.getMessage()));
     }
 
     @ExceptionHandler(UnAuthorizedException.class)
-    public ResponseEntity<APIException> handleUnauthorizedException(UnAuthorizedException ex) {
+    public ResponseEntity<Object> handleUnauthorizedException(UnAuthorizedException ex) {
         HttpStatus unauthorized = HttpStatus.UNAUTHORIZED;
         APIException apiException = new APIException(
                 ex.getMessage(),
@@ -71,7 +72,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<APIException> handleForbiddenException(ForbiddenException ex) {
+    public ResponseEntity<Object> handleForbiddenException(ForbiddenException ex) {
         HttpStatus forbiddenStatud = HttpStatus.FORBIDDEN;
         APIException apiException = new APIException(
                 ex.getMessage(),
@@ -82,7 +83,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = {TooManyRequestException.class})
-    public ResponseEntity<APIException> handleTooManyRequestException(TooManyRequestException ex) {
+    public ResponseEntity<Object> handleTooManyRequestException(TooManyRequestException ex) {
         HttpStatus tooManyRequests = HttpStatus.TOO_MANY_REQUESTS;
         APIException apiException = new APIException(
                 ex.getMessage(),

@@ -23,9 +23,9 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
+    // Pagination tasks for current user
     public Page<Task> getTasksForUser(int page,int size) {
         String userId = UserContext.getUserId();
-        System.out.println(userId);
         Pageable pageable = PageRequest.of(page, size);
         return taskRepository.findByOwnerId(pageable, userId);
     }
@@ -33,7 +33,6 @@ public class TaskService {
 
     public TaskResponse getTaskByIdAndOwner(Long id) {
         String ownerId = UserContext.getUserId();
-        System.out.println(ownerId);
         Task task = taskRepository.findById(id).orElse(null);
         if(task!=null){
         if (!Objects.equals(task.getOwnerId(), ownerId)) {
@@ -82,7 +81,6 @@ public class TaskService {
 
     public String deleteTask(Long id) {
         String ownerId = UserContext.getUserId();
-        System.out.println(ownerId);
         if (taskRepository.existsById(id)) {
             Task task = taskRepository.findById(id).get();
             if (!Objects.equals(task.getOwnerId(), ownerId)) {

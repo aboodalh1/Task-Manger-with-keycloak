@@ -125,6 +125,7 @@ public class KeycloakProperties {
                 private String adminTokenUri;
                 private String tokenUri;
                 private String jwkSetUri;
+                private String keycloakUri;
                 private String userNameAttribute;
 
                 public String getIssuerUri() {
@@ -189,6 +190,14 @@ public class KeycloakProperties {
 
                 public void setUserNameAttribute(String userNameAttribute) {
                     this.userNameAttribute = userNameAttribute;
+                }
+
+                public String getKeycloakUri() {
+                    return keycloakUri;
+                }
+
+                public void setKeycloakUri(String keycloakUri) {
+                    this.keycloakUri = keycloakUri;
                 }
             }
         }

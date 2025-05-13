@@ -1,0 +1,44 @@
+package com.example.task_manger;
+
+import com.example.task_manger.tasks.repository.TaskRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.*;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.*;
+
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest
+public class TaskControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @ReplaceBean
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    @WithMockUser(username = "test-user-id", roles = "USER") // Spring Security simulates auth
+    void getTasks_ShouldReturn200() throws Exception {
+        mockMvc.perform(get("/api/v1/tasks?page=0&size=5"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "test-user-id")
+    void deleteTask_ShouldReturn404WhenNotFound() throws Exception {
+        when(taskRepository.existsById(100L)).thenReturn(false);
+
+        mockMvc.perform(delete("/api/v1/tasks/100"))
+                .andExpect(status().isNotFound());
+    }
+}

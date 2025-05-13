@@ -1,14 +1,10 @@
 package com.example.task_manger.users.request;
 
-import com.example.task_manger.util.annotation.ValidPassword;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class RegisterRequest {
     private String username;
-    @ValidPassword
-    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
     private String email;
     private String firstName;

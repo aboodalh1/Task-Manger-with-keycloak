@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+// JWT Authentication Converter
 @Component
 public class JWTAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
